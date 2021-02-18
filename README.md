@@ -19,7 +19,7 @@ conda install -c conda-forge -c simonboothroyd plotmol
 ## Getting Started
 
 *We recommend viewing the getting started example in a Jupyter notebook. [This full example can be found here](
-https://github.com/SimonBoothroyd/plotmol/examples/scatter-plot.ipynb)*. 
+https://github.com/SimonBoothroyd/plotmol/blob/main/examples/scatter-plot.ipynb)*. 
 
 In order to use the plotting functionality within a Jupyter notebook we first need to configure `bokeh` to run in 
 notebook mode:
