@@ -1,0 +1,17 @@
+name: test
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+    # Base depends
+  - python
+  - pip
+
+    # Core
+  - rdkit
+  - bokeh
+
+    # Testing
+  - pytest
+  - pytest-cov
+  - codecov
