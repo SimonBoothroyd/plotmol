@@ -26,6 +26,19 @@ def test_scatter(bokeh_figure):
     )
 
 
+def test_scatter_tagged_atoms(bokeh_figure):
+    # again difficult to test but make sure a valid plot is made
+    plotmol.scatter(
+        bokeh_figure,
+        x=[0.0],
+        y=[0.0],
+        smiles=["[H][c]1[n][c]([H])[c:2]([O:3][C:4]([H])([H])[H])[c:1]([H])[c]1[H]"],
+        marker="x",
+        marker_size=15,
+        legend_label="Series A",
+    )
+
+
 def test_scatter_invalid_input_size(bokeh_figure):
 
     with pytest.raises(InputSizeError):

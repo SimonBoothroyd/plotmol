@@ -29,12 +29,21 @@ def smiles_to_svg(smiles: str, image_width: int = 200, image_height: int = 200) 
 
     rdkit_molecule = Chem.MolFromSmiles(smiles, smiles_parser)
 
+    # look for any tagged atom indices
+    tagged_atoms = []
+    for atom in rdkit_molecule.GetAtoms():
+        map_id = atom.GetAtomMapNum()
+        if map_id != 0:
+            tagged_atoms.append(atom.GetIdx())
+
     # Generate a set of 2D coordinates.
     if not rdkit_molecule.GetNumConformers():
         Chem.rdDepictor.Compute2DCoords(rdkit_molecule)
 
     drawer = rdMolDraw2D.MolDraw2DSVG(image_width, image_height)
-    rdMolDraw2D.PrepareAndDrawMolecule(drawer, rdkit_molecule)
+    rdMolDraw2D.PrepareAndDrawMolecule(
+        drawer, rdkit_molecule, highlightAtoms=tagged_atoms
+    )
     drawer.FinishDrawing()
 
     svg_content = drawer.GetDrawingText()
