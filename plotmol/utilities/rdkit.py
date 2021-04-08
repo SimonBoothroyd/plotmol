@@ -1,3 +1,4 @@
+#CORRECT FILE
 import functools
 
 from rdkit import Chem
@@ -5,7 +6,7 @@ from rdkit.Chem.Draw import rdMolDraw2D
 
 
 @functools.lru_cache(1024)
-def smiles_to_svg(smiles: str, image_width: int = 200, image_height: int = 200) -> str:
+def smiles_to_svg(smiles: str, torsion_indices: (int, int), image_width: int = 200, image_height: int = 200) -> str:
     """Renders a 2D representation of a molecule based on its SMILES representation as
     an SVG string.
 
@@ -34,7 +35,15 @@ def smiles_to_svg(smiles: str, image_width: int = 200, image_height: int = 200) 
         Chem.rdDepictor.Compute2DCoords(rdkit_molecule)
 
     drawer = rdMolDraw2D.MolDraw2DSVG(image_width, image_height)
-    rdMolDraw2D.PrepareAndDrawMolecule(drawer, rdkit_molecule)
+    
+    # Locate the bond to be highlighted using the central torsion indices for the mol
+    if rdkit_molecule.GetBondBetweenAtoms(torsion_indices[0], torsion_indices[1]) != None:
+        bond = [rdkit_molecule.GetBondBetweenAtoms(torsion_indices[0], torsion_indices[1]).GetIdx()]
+    else:
+        bond = []
+        
+    rdMolDraw2D.PrepareAndDrawMolecule(drawer, rdkit_molecule, highlightBonds = bond)
+                
     drawer.FinishDrawing()
 
     svg_content = drawer.GetDrawingText()

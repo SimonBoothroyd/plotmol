@@ -39,7 +39,7 @@ def scatter(
     figure: Figure,
     x: List[DataType],
     y: List[DataType],
-    smiles: List[str],
+    smiles: Dict[str, tuple],
     legend_label: Optional[str] = None,
     marker: Optional[str] = None,
     marker_size: Optional[int] = None,
@@ -53,7 +53,7 @@ def scatter(
         figure: The bokeh figure to plot the scatter data on.
         x: An array of the x values to plot.
         y: An array of the y values to plot.
-        smiles: An array of the SMILES patterns associated with each (x, y) pair.
+        smiles: An dict of the SMILES patterns associated with each (x, y) pair attached to the central torsion indices to be highlighted.
         legend_label: The label to show in the legend for this data series.
         marker: The marker style.
         marker_size: The size of the marker to draw.
@@ -61,7 +61,7 @@ def scatter(
         kwargs: Extra keyword arguments to pass to the underlying bokeh ``scatter``
             function.
     """
-
+    
     # Validate the sizes of the input arrays.
     data_sizes = {"x": len(x), "y": len(y), "smiles": len(smiles)}
 
@@ -70,13 +70,13 @@ def scatter(
 
     # Generate an image for each SMILES pattern.
     raw_images = [
-        base64.b64encode(smiles_to_svg(smiles_pattern).encode()).decode()
-        for smiles_pattern in smiles
+        base64.b64encode(smiles_to_svg(smiles_pattern, torsion_indices).encode()).decode()
+        for smiles_pattern, torsion_indices in smiles.items()
     ]
     images = [f"data:image/svg+xml;base64,{raw_image}" for raw_image in raw_images]
 
     # Create a custom data source.
-    source = ColumnDataSource(data={"x": x, "y": y, "smiles": smiles, "image": images})
+    source = ColumnDataSource(data={"x": x, "y": y, "smiles": list(smiles.keys()), "image": images})
 
     # Add the scatter data.
     scatter_kwargs = {**kwargs}
