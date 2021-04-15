@@ -5,8 +5,9 @@ Interactive plotting of data annotated with molecule structures.
 
 from ._version import get_versions
 from .plotmol import scatter
+from .styles import MoleculeStyle
 
-__all__ = [scatter]
+__all__ = [MoleculeStyle, scatter]
 
 __version__ = get_versions()["version"]
 del get_versions

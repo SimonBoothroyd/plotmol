@@ -97,6 +97,69 @@ from bokeh.plotting import show
 show(figure)
 ```
 
+## Styling the Molecule Structure
+
+The molecule structure which is shown when a data point is hovered over can be customised in two ways: by passing a
+style object to the `scatter` function or by using a custom function to render the SVG image containing the 2D 
+structure entirely.
+
+### Changing the molecule style
+
+The `scatter` function accepts a `molecule_style` argument which will control certain aspects of how the 2D
+structure will be rendered:
+
+```python
+from plotmol import MoleculeStyle
+
+molecule_style = MoleculeStyle(
+    image_width=200,
+    image_height=200,
+    
+    highlight_tagged_atoms=True,
+    highlight_tagged_bonds=True,
+)
+
+plotmol.scatter(
+    figure,
+    x=[0.0, 1.0, 2.0, 3.0],
+    y=[1.0, 2.0, 3.0, 4.0],
+    smiles=["C=O", "CC=O", "COC", "CCCO"],
+    molecule_style=molecule_style
+)
+```
+
+By default atoms which have been tagged with a map index, e.g. `"[C:1][C:2]"`, and the bonds between those atoms will
+be highlighted. This behaviour can be disabled by setting `highlight_tagged_atoms` and / or `highlight_tagged_bonds`
+to `False`.
+
+### Using a custom render function
+
+By default the 2D structure of the molecule associated with a data point is drawn using RDKit using the 
+``plotmol.utilities.rdkit.smiles_to_svg`` function, however an entirely custom function can be passed to
+the `scatter` function:
+
+```python
+
+def custom_image_function(smiles: str, style: MoleculeStyle) -> str:
+    
+    # Render the molecule to a SVG
+    svg_contents = ...
+    
+    return svg_contents
+
+plotmol.scatter(
+    figure,
+    x=[0.0, 1.0, 2.0, 3.0],
+    y=[1.0, 2.0, 3.0, 4.0],
+    smiles=["C=O", "CC=O", "COC", "CCCO"],
+    molecule_to_image_function=custom_image_function
+)
+
+```
+
+The function should take as arguments a SMILES pattern which defines the molecule that should be drawn, and a style
+object which specifies options for how the molecule should be drawn.
+
 ### Copyright
 
 Copyright (c) 2021, Simon Boothroyd
