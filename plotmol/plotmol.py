@@ -1,14 +1,18 @@
 import base64
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Callable, Dict, List, Literal, Optional, Union
 
 from bokeh.models import ColumnDataSource
 from bokeh.plotting import Figure
 
+from plotmol.styles import MoleculeStyle
 from plotmol.utilities.rdkit import smiles_to_svg
 
 DataType = Union[float, int, str]
+
 Label = Dict[str, str]
 Marker = Literal["x", "o"]
+
+MoleculeToImageFunction = Callable[[str, MoleculeStyle], str]
 
 
 class InputSizeError(ValueError):
@@ -44,6 +48,8 @@ def scatter(
     marker: Optional[str] = None,
     marker_size: Optional[int] = None,
     marker_color: Optional[str] = None,
+    molecule_style: Optional[MoleculeStyle] = None,
+    molecule_to_image_function: Optional[MoleculeToImageFunction] = None,
     **kwargs: Dict[str, Any],
 ):
     """Adds a scatter series to a bokeh figure which will show the molecular
@@ -58,9 +64,25 @@ def scatter(
         marker: The marker style.
         marker_size: The size of the marker to draw.
         marker_color: The marker color.
+        molecule_style: Options which control how the 2D structure which is shown when a
+            data point is hovered over should be rendered.
+        molecule_to_image_function: The function which should be used to render the
+            molecule as a 2D SVG image. This function should accept a string SMILES
+            pattern and a molecule style object and return a valid SVG string (e.g.
+            ``"<svg>...</svg>"``). By default the ``plotmol.rdkit.smiles_to_svg``
+            function will be used.
         kwargs: Extra keyword arguments to pass to the underlying bokeh ``scatter``
             function.
     """
+
+    # Set the default mutable inputs.
+    molecule_style = molecule_style if molecule_style is not None else MoleculeStyle()
+
+    molecule_to_image_function = (
+        molecule_to_image_function
+        if molecule_to_image_function is not None
+        else smiles_to_svg
+    )
 
     # Validate the sizes of the input arrays.
     data_sizes = {"x": len(x), "y": len(y), "smiles": len(smiles)}
@@ -70,7 +92,9 @@ def scatter(
 
     # Generate an image for each SMILES pattern.
     raw_images = [
-        base64.b64encode(smiles_to_svg(smiles_pattern).encode()).decode()
+        base64.b64encode(
+            molecule_to_image_function(smiles_pattern, molecule_style).encode()
+        ).decode()
         for smiles_pattern in smiles
     ]
     images = [f"data:image/svg+xml;base64,{raw_image}" for raw_image in raw_images]
