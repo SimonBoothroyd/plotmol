@@ -1,5 +1,5 @@
 import base64
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from bokeh.models import ColumnDataSource
 from bokeh.plotting import Figure
@@ -8,7 +8,7 @@ from plotmol.utilities.rdkit import smiles_to_svg
 
 DataType = Union[float, int, str]
 Label = Dict[str, str]
-Marker = Literal["x", "o"]
+#Marker = Literal["x", "o"]
 
 
 class InputSizeError(ValueError):
@@ -39,7 +39,7 @@ def scatter(
     figure: Figure,
     x: List[DataType],
     y: List[DataType],
-    smiles: List[str],
+    smiles: Dict[str, tuple],
     legend_label: Optional[str] = None,
     marker: Optional[str] = None,
     marker_size: Optional[int] = None,
@@ -61,7 +61,7 @@ def scatter(
         kwargs: Extra keyword arguments to pass to the underlying bokeh ``scatter``
             function.
     """
-
+    
     # Validate the sizes of the input arrays.
     data_sizes = {"x": len(x), "y": len(y), "smiles": len(smiles)}
 
@@ -70,13 +70,13 @@ def scatter(
 
     # Generate an image for each SMILES pattern.
     raw_images = [
-        base64.b64encode(smiles_to_svg(smiles_pattern).encode()).decode()
-        for smiles_pattern in smiles
+        base64.b64encode(smiles_to_svg(smiles_pattern, torsion_indices).encode()).decode()
+        for smiles_pattern, torsion_indices in smiles.items()
     ]
     images = [f"data:image/svg+xml;base64,{raw_image}" for raw_image in raw_images]
 
     # Create a custom data source.
-    source = ColumnDataSource(data={"x": x, "y": y, "smiles": smiles, "image": images})
+    source = ColumnDataSource(data={"x": x, "y": y, "smiles": list(smiles.keys()), "image": images})
 
     # Add the scatter data.
     scatter_kwargs = {**kwargs}
