@@ -3,7 +3,7 @@ import functools
 from rdkit import Chem
 from rdkit.Chem.Draw import rdMolDraw2D
 
-from plotmol import MoleculeStyle
+from plotmol.styles import MoleculeStyle
 
 
 @functools.lru_cache(1024)
