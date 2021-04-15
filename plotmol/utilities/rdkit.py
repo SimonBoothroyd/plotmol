@@ -31,9 +31,7 @@ def smiles_to_svg(smiles: str, image_width: int = 200, image_height: int = 200) 
 
     # look for any tagged atom indices
     tagged_atoms = [
-        atom.GetIdx() 
-        for atom in rdkit_molecule.GetAtoms() 
-        if atom.GetAtomMapNum() != 0
+        atom.GetIdx() for atom in rdkit_molecule.GetAtoms() if atom.GetAtomMapNum() != 0
     ]
 
     # Generate a set of 2D coordinates.
