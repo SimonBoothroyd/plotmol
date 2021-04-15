@@ -30,11 +30,11 @@ def smiles_to_svg(smiles: str, image_width: int = 200, image_height: int = 200) 
     rdkit_molecule = Chem.MolFromSmiles(smiles, smiles_parser)
 
     # look for any tagged atom indices
-    tagged_atoms = []
-    for atom in rdkit_molecule.GetAtoms():
-        map_id = atom.GetAtomMapNum()
-        if map_id != 0:
-            tagged_atoms.append(atom.GetIdx())
+    tagged_atoms = [
+        atom.GetIdx() 
+        for atom in rdkit_molecule.GetAtoms() 
+        if atom.GetAtomMapNum() != 0
+    ]
 
     # Generate a set of 2D coordinates.
     if not rdkit_molecule.GetNumConformers():
