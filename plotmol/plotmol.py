@@ -1,5 +1,5 @@
 import base64
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from bokeh.models import ColumnDataSource
 from bokeh.plotting import Figure
@@ -8,7 +8,7 @@ from plotmol.utilities.rdkit import smiles_to_svg
 
 DataType = Union[float, int, str]
 Label = Dict[str, str]
-Marker = Literal["x", "o"]
+#Marker = Literal["x", "o"]
 
 
 class InputSizeError(ValueError):
@@ -53,7 +53,7 @@ def scatter(
         figure: The bokeh figure to plot the scatter data on.
         x: An array of the x values to plot.
         y: An array of the y values to plot.
-        smiles: An dict of the SMILES patterns associated with each (x, y) pair attached to the central torsion indices to be highlighted.
+        smiles: An array of the SMILES patterns associated with each (x, y) pair.
         legend_label: The label to show in the legend for this data series.
         marker: The marker style.
         marker_size: The size of the marker to draw.
