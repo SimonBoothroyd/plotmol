@@ -1,8 +1,9 @@
 import pytest
 from bokeh.plotting import Figure
 
-from plotmol import MoleculeStyle, plotmol
+from plotmol import plotmol
 from plotmol.plotmol import InputSizeError, default_tooltip_template
+from plotmol.styles import MoleculeStyle
 
 
 @pytest.fixture()

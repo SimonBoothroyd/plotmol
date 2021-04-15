@@ -109,7 +109,7 @@ The `scatter` function accepts a `molecule_style` argument which will control ce
 structure will be rendered:
 
 ```python
-from plotmol import MoleculeStyle
+from plotmol.styles import MoleculeStyle
 
 molecule_style = MoleculeStyle(
     image_width=200,

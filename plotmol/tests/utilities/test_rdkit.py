@@ -1,4 +1,4 @@
-from plotmol import MoleculeStyle
+from plotmol.styles import MoleculeStyle
 from plotmol.utilities.rdkit import smiles_to_svg
 
 
