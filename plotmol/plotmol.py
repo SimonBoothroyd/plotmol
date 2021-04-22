@@ -8,7 +8,7 @@ from plotmol.utilities.rdkit import smiles_to_svg
 
 DataType = Union[float, int, str]
 Label = Dict[str, str]
-#Marker = Literal["x", "o"]
+#Marker = Literal["x", "o"] Does not work with Python 3.9
 
 
 class InputSizeError(ValueError):

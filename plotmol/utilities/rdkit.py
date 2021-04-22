@@ -1,4 +1,3 @@
-#CORRECT FILE
 import functools
 
 import pickle
@@ -33,6 +32,8 @@ def smiles_to_svg(smiles: str, torsion_indices: (int, int), image_width: int = 2
     ----------
     smiles
         The SMILES pattern.
+    torsion_indices
+        The torsion indices for the molecule.
     image_width
         The width to make the final SVG.
     image_height
@@ -47,25 +48,28 @@ def smiles_to_svg(smiles: str, torsion_indices: (int, int), image_width: int = 2
     smiles_parser = Chem.rdmolfiles.SmilesParserParams()
     smiles_parser.removeHs = False
     
-    oe_molecule, status = smiles2oemol(smiles)
-    openff_molecule = Molecule.from_openeye(oe_molecule)
-    rdkit_molecule = openff_molecule.to_rdkit()
-
-    #rdkit_molecule = Chem.MolFromSmiles(smiles, smiles_parser)
-    
+    oe_conformed = False
+    try:
+        oe_molecule, status = smiles2oemol(smiles)
+        openff_molecule = Molecule.from_openeye(oe_molecule)
+        rdkit_molecule = openff_molecule.to_rdkit()
+        oe_conformed = True
+    except:
+        rdkit_molecule = Chem.MolFromSmiles(smiles, smiles_parser)
+   
     # Generate a set of 2D coordinates.
-    if not rdkit_molecule.GetNumConformers():
-        Chem.rdDepictor.Compute2DCoords(rdkit_molecule)
+    Chem.rdDepictor.Compute2DCoords(rdkit_molecule)
 
     drawer = rdMolDraw2D.MolDraw2DSVG(image_width, image_height)
 
-    if rdkit_molecule.GetBondBetweenAtoms(torsion_indices[0], torsion_indices[1]) != None:
-        bonds = [rdkit_molecule.GetBondBetweenAtoms(torsion_indices[0], torsion_indices[1]).GetIdx()]
-    else:
-        bond = []
+    torsion_bonds = []
+    if oe_conformed:
+        for i in range(len(torsion_indices) - 1):
+            if rdkit_molecule.GetBondBetweenAtoms(torsion_indices[i], torsion_indices[i+1]):
+                torsion_bonds.append(rdkit_molecule.GetBondBetweenAtoms(torsion_indices[i], torsion_indices[i+1]).GetIdx())
+    
+    rdMolDraw2D.PrepareAndDrawMolecule(drawer, rdkit_molecule, highlightBonds = torsion_bonds)
         
-    rdMolDraw2D.PrepareAndDrawMolecule(drawer, rdkit_molecule, highlightBonds = bonds)
-                
     drawer.FinishDrawing()
 
     svg_content = drawer.GetDrawingText()
