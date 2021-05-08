@@ -1,5 +1,5 @@
 import base64
-from typing import Any, Callable, Dict, List, Literal, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 
 from bokeh.models import ColumnDataSource
 from bokeh.plotting import Figure
@@ -8,9 +8,6 @@ from plotmol.styles import MoleculeStyle
 from plotmol.utilities.rdkit import smiles_to_svg
 
 DataType = Union[float, int, str]
-
-Label = Dict[str, str]
-Marker = Literal["x", "o"]
 
 MoleculeToImageFunction = Callable[[str, MoleculeStyle], str]
 
