@@ -1,7 +1,7 @@
 import base64
 from typing import Any, Callable, Dict, List, Optional, Union
 
-from bokeh.models import ColumnDataSource
+from bokeh.models import ColumnDataSource, GlyphRenderer
 from bokeh.plotting import Figure
 
 from plotmol.styles import MoleculeStyle
@@ -47,8 +47,9 @@ def scatter(
     marker_color: Optional[str] = None,
     molecule_style: Optional[MoleculeStyle] = None,
     molecule_to_image_function: Optional[MoleculeToImageFunction] = None,
+    custom_column_data: Optional[Dict[str, List[DataType]]] = None,
     **kwargs: Dict[str, Any],
-):
+) -> GlyphRenderer:
     """Adds a scatter series to a bokeh figure which will show the molecular
     structure associated with a data point when the user hovers over it.
 
@@ -68,6 +69,19 @@ def scatter(
             pattern and a molecule style object and return a valid SVG string (e.g.
             ``"<svg>...</svg>"``). By default the ``plotmol.rdkit.smiles_to_svg``
             function will be used.
+        custom_column_data: An optional dictionary of extra entries to include in the
+            ``ColumnDataSource`` used to render the plot. These custom entries can be
+            accessed from a figures tooltip and used, for example, to add extra outputs
+            such as a tooltip title or additional properties associated with a data
+            point.
+
+            By default the data included are the ``x``, ``y``, and ``smiles`` lists.
+
+            Each key will correspond to a '@key' that will be made available to
+            the tooltip template (see `the Bokeh documentation
+            <https://docs.bokeh.org/en/latest/docs/user_guide/tools.html#custom-tooltip>`_
+            for more details) and each value must be a list of the corresponding values
+            with a length equal to ``x`` and ``y``.
         kwargs: Extra keyword arguments to pass to the underlying bokeh ``scatter``
             function.
     """
@@ -97,7 +111,22 @@ def scatter(
     images = [f"data:image/svg+xml;base64,{raw_image}" for raw_image in raw_images]
 
     # Create a custom data source.
-    source = ColumnDataSource(data={"x": x, "y": y, "smiles": smiles, "image": images})
+    column_data = {"x": x, "y": y, "smiles": smiles, "image": images}
+
+    if custom_column_data is not None:
+
+        invalid_sizes = {
+            key: len(entry)
+            for key, entry in custom_column_data.items()
+            if len(entry) != len(x)
+        }
+
+        if len(invalid_sizes) > 0:
+            raise InputSizeError(invalid_sizes)
+
+        column_data.update(custom_column_data)
+
+    source = ColumnDataSource(data=column_data)
 
     # Add the scatter data.
     scatter_kwargs = {**kwargs}
@@ -111,4 +140,4 @@ def scatter(
     if legend_label is not None:
         scatter_kwargs["legend_label"] = legend_label
 
-    figure.scatter(x="x", y="y", source=source, **scatter_kwargs)
+    return figure.scatter(x="x", y="y", source=source, **scatter_kwargs)

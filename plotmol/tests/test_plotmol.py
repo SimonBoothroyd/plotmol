@@ -70,3 +70,36 @@ def test_scatter_custom_molecule_function(bokeh_figure):
     )
 
     assert function_called is True
+
+
+def test_scatter_invalid_custom_data_size(bokeh_figure):
+
+    expected_match = r"all have the same length: title \(2\)"
+
+    with pytest.raises(InputSizeError, match=expected_match):
+        plotmol.scatter(
+            bokeh_figure,
+            x=[0.0],
+            y=[0.0],
+            smiles=["C"],
+            custom_column_data={"title": ["A", "B"]},
+        )
+
+
+def test_scatter_custom_data(bokeh_figure):
+
+    glyph = plotmol.scatter(
+        bokeh_figure,
+        x=[0.0],
+        y=[0.0],
+        smiles=["C"],
+        marker="x",
+        marker_size=15,
+        legend_label="Series A",
+        custom_column_data={"title": ["A"]},
+    )
+
+    assert "x" in glyph.data_source.data
+    assert "y" in glyph.data_source.data
+    assert "smiles" in glyph.data_source.data
+    assert "title" in glyph.data_source.data

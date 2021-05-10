@@ -160,6 +160,56 @@ plotmol.scatter(
 The function should take as arguments a SMILES pattern which defines the molecule that should be drawn, and a style
 object which specifies options for how the molecule should be drawn.
 
+## Customising the Tooltips
+
+The tooltips that are displayed when a data point is hovered over can be easily customized by providing a custom 
+tooltip template when creating a figure:
+
+```python
+custom_tooltip_template = """
+<div>
+    <div>
+        <span>@title</span>
+        <img src="@image" ></img>
+    </div>
+</div>
+"""
+
+figure = Figure(
+    tooltips=custom_tooltip_template,
+    ...
+)
+```
+
+To ensure that the molecular structure associated with a data point is shown the template must contain an image tag
+which uses the `@image` key as its `src`:
+
+```html
+<img src="@image" ></img>
+```
+
+Extra data can be made available to the tooltip template by providing a ``custom_column_data`` to the ``scatter`` 
+function:
+
+```python
+plotmol.scatter(
+    figure,
+    x=[0.0, 1.0, 2.0, 3.0],
+    y=[0.0, 1.0, 2.0, 3.0],
+    smiles=["C", "CO", "CC", "CCO"],
+    marker="x",
+    marker_size=15,
+    marker_color=palette[0],
+    legend_label="Series A",
+    custom_column_data={"title": ["A", "B", "C", "D"]}
+)
+```
+
+Each key in the data dictionary will be exposed to the tooltip template in the form `@key`. In this example the custom 
+toolkit template can make use of the additional `@title` key. 
+
+More information about custom tooltips can be found in the [Bokeh documentation](https://docs.bokeh.org/en/latest/docs/user_guide/tools.html#custom-tooltip)
+
 ### Copyright
 
 Copyright (c) 2021, Simon Boothroyd
