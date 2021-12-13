@@ -68,7 +68,7 @@ def smiles_to_svg(
         ]
     )
 
-    if style.turno_off_atom_index:
+    if style.turn_off_atom_index:
         for atom in rdkit_molecule.GetAtoms():
             atom.SetAtomMapNum(0)
 
