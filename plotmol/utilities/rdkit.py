@@ -1,16 +1,16 @@
 import functools
 import itertools
 
+from rdkit import Chem
 from rdkit.Chem.Draw import rdMolDraw2D
 
 from plotmol.styles import MoleculeStyle
-from rdkit import Chem
 
 
 @functools.lru_cache(1024)
 def smiles_to_svg(
-        smiles: str,
-        style: MoleculeStyle,
+    smiles: str,
+    style: MoleculeStyle,
 ) -> str:
     """Renders a 2D representation of a molecule based on its SMILES representation as
     an SVG string.
@@ -35,13 +35,21 @@ def smiles_to_svg(
     if not style.show_all_hydrogens:
         # updateExplicitCount: Keep a record of the hydrogens we remove.
         # This is used in visualization to distinguish eg radicals from normal species
-        rdkit_molecule = Chem.rdmolops.RemoveHs(rdkit_molecule, updateExplicitCount=True)
+        rdkit_molecule = Chem.rdmolops.RemoveHs(
+            rdkit_molecule, updateExplicitCount=True
+        )
     # highlight substructure
     substruct_smarts = style.substruct_smarts
     # list_of_atoms = style.list_of_atoms
 
     if substruct_smarts:
-        atom_matches = list(itertools.chain(*rdkit_molecule.GetSubstructMatches(Chem.MolFromSmarts(substruct_smarts))))
+        atom_matches = list(
+            itertools.chain(
+                *rdkit_molecule.GetSubstructMatches(
+                    Chem.MolFromSmarts(substruct_smarts)
+                )
+            )
+        )
     # elif list_of_atoms:
     #     atom_matches = list_of_atoms
     else:
@@ -56,12 +64,13 @@ def smiles_to_svg(
             bond.GetIdx()
             for bond in rdkit_molecule.GetBonds()
             if bond.GetBeginAtom().GetIdx() in atom_matches
-               and bond.GetEndAtom().GetIdx() in atom_matches
+            and bond.GetEndAtom().GetIdx() in atom_matches
         ]
     )
 
-    for atom in rdkit_molecule.GetAtoms():
-        atom.SetAtomMapNum(0)
+    if style.turno_off_atom_index:
+        for atom in rdkit_molecule.GetAtoms():
+            atom.SetAtomMapNum(0)
 
     Chem.Draw.rdDepictor.SetPreferCoordGen(True)
     Chem.Draw.rdDepictor.Compute2DCoords(rdkit_molecule)
@@ -72,10 +81,11 @@ def smiles_to_svg(
     drawer.drawOptions().setHighlightColour((0.3, 1.0, 0.5))
     drawer.drawOptions().addAtomIndices = False
     drawer.drawOptions().addBondIndices = False
-    drawer.DrawMolecule(rdkit_molecule,
-                        highlightAtoms=tagged_atoms,
-                        highlightBonds=tagged_bonds,
-                        )
+    drawer.DrawMolecule(
+        rdkit_molecule,
+        highlightAtoms=tagged_atoms,
+        highlightBonds=tagged_bonds,
+    )
     drawer.FinishDrawing()
 
     svg_content = drawer.GetDrawingText()

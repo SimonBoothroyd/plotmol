@@ -34,3 +34,4 @@ class MoleculeStyle:
 
     substruct_smarts: str = None
     show_all_hydrogens: bool = False
+    turn_off_atom_index: bool = False
