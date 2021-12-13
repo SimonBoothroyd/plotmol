@@ -20,6 +20,10 @@ class MoleculeStyle:
             been tagged with a map index, e.g. whether the carbon-oxygen bond should be
             highlighted for ``"[C:1][O:2]"``.
 
+        substruct_smarts: to highlight atoms in molecules based on smarts pattern
+
+        show_all_hydrogens: to turn on/off displaying hydrogens in the final image
+
     """
 
     image_width: int = 200
@@ -27,3 +31,7 @@ class MoleculeStyle:
 
     highlight_tagged_atoms: bool = True
     highlight_tagged_bonds: bool = True
+
+    substruct_smarts: str = None
+    show_all_hydrogens: bool = False
+    turn_off_atom_index: bool = False

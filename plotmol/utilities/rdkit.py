@@ -1,4 +1,5 @@
 import functools
+import itertools
 
 from rdkit import Chem
 from rdkit.Chem.Draw import rdMolDraw2D
@@ -31,35 +32,56 @@ def smiles_to_svg(
     smiles_parser.removeHs = False
 
     rdkit_molecule = Chem.MolFromSmiles(smiles, smiles_parser)
+    if not style.show_all_hydrogens:
+        # updateExplicitCount: Keep a record of the hydrogens we remove.
+        # This is used in visualization to distinguish eg radicals from normal species
+        rdkit_molecule = Chem.rdmolops.RemoveHs(
+            rdkit_molecule, updateExplicitCount=True
+        )
+    # highlight substructure
+    substruct_smarts = style.substruct_smarts
+    # list_of_atoms = style.list_of_atoms
 
+    if substruct_smarts:
+        atom_matches = list(
+            itertools.chain(
+                *rdkit_molecule.GetSubstructMatches(
+                    Chem.MolFromSmarts(substruct_smarts)
+                )
+            )
+        )
+    # elif list_of_atoms:
+    #     atom_matches = list_of_atoms
+    else:
+        atom_matches = []
     # look for any tagged atom indices
-    tagged_atoms = (
-        []
-        if not style.highlight_tagged_atoms
-        else [
-            atom.GetIdx()
-            for atom in rdkit_molecule.GetAtoms()
-            if atom.GetAtomMapNum() != 0
-        ]
-    )
+    tagged_atoms = atom_matches
+
     tagged_bonds = (
         []
         if not style.highlight_tagged_bonds
         else [
             bond.GetIdx()
             for bond in rdkit_molecule.GetBonds()
-            if bond.GetBeginAtom().GetAtomMapNum() != 0
-            and bond.GetEndAtom().GetAtomMapNum() != 0
+            if bond.GetBeginAtom().GetIdx() in atom_matches
+            and bond.GetEndAtom().GetIdx() in atom_matches
         ]
     )
 
-    # Generate a set of 2D coordinates.
-    if not rdkit_molecule.GetNumConformers():
-        Chem.rdDepictor.Compute2DCoords(rdkit_molecule)
+    if style.turn_off_atom_index:
+        for atom in rdkit_molecule.GetAtoms():
+            atom.SetAtomMapNum(0)
+
+    Chem.Draw.rdDepictor.SetPreferCoordGen(True)
+    Chem.Draw.rdDepictor.Compute2DCoords(rdkit_molecule)
+
+    rdkit_molecule = rdMolDraw2D.PrepareMolForDrawing(rdkit_molecule)
 
     drawer = rdMolDraw2D.MolDraw2DSVG(style.image_width, style.image_height)
-    rdMolDraw2D.PrepareAndDrawMolecule(
-        drawer,
+    drawer.drawOptions().setHighlightColour((0.3, 1.0, 0.5))
+    drawer.drawOptions().addAtomIndices = False
+    drawer.drawOptions().addBondIndices = False
+    drawer.DrawMolecule(
         rdkit_molecule,
         highlightAtoms=tagged_atoms,
         highlightBonds=tagged_bonds,
