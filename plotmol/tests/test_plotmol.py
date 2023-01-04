@@ -1,5 +1,5 @@
 import pytest
-from bokeh.plotting import Figure
+from bokeh.plotting import figure
 
 from plotmol import plotmol
 from plotmol.plotmol import InputSizeError, default_tooltip_template
@@ -8,7 +8,7 @@ from plotmol.styles import MoleculeStyle
 
 @pytest.fixture()
 def bokeh_figure():
-    return Figure(tooltips=default_tooltip_template())
+    return figure(tooltips=default_tooltip_template())
 
 
 def test_scatter(bokeh_figure):

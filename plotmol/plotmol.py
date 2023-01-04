@@ -2,7 +2,7 @@ import base64
 from typing import Any, Callable, Dict, List, Optional, Union
 
 from bokeh.models import ColumnDataSource, GlyphRenderer
-from bokeh.plotting import Figure
+from bokeh.plotting import figure
 
 from plotmol.styles import MoleculeStyle
 from plotmol.utilities.rdkit import smiles_to_svg
@@ -37,7 +37,7 @@ def default_tooltip_template() -> str:
 
 
 def scatter(
-    figure: Figure,
+    figure: figure,
     x: List[DataType],
     y: List[DataType],
     smiles: List[str],

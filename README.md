@@ -32,10 +32,10 @@ output_notebook()
 Next, similar to with `matplotlib`, we create a figure that we will render to.
 
 ```python
-from bokeh.plotting import Figure
+from bokeh.plotting import figure
 from plotmol.plotmol import default_tooltip_template
 
-figure = Figure(
+figure = figure(
     # Required to show the molecule structure pop-up.
     tooltips=default_tooltip_template(),
     
@@ -44,8 +44,8 @@ figure = Figure(
     x_axis_label="Dummy X",
     y_axis_label="Dummy Y",
     
-    plot_width=500,
-    plot_height=500,
+    width=500,
+    height=500,
 )
 ```
 
@@ -175,7 +175,7 @@ custom_tooltip_template = """
 </div>
 """
 
-figure = Figure(
+figure = figure(
     tooltips=custom_tooltip_template,
     ...
 )
