@@ -1,12 +1,11 @@
 """
 plotmol
+
 Interactive plotting of data annotated with molecule structures.
 """
 
-from ._version import get_versions
-from .plotmol import scatter
+from . import _version
+from ._plotmol import InputSizeError, default_tooltip_template, scatter
 
-__all__ = [scatter]
-
-__version__ = get_versions()["version"]
-del get_versions
+__version__ = _version.get_versions()["version"]
+__all__ = ["InputSizeError", "default_tooltip_template", "scatter", "__version__"]

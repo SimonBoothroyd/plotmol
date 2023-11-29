@@ -1,0 +1,30 @@
+name: plotmol
+channels:
+  - conda-forge
+dependencies:
+  # Base depends
+  - python >=3.10
+  - pip
+
+  # Core
+  - rdkit
+  - bokeh
+
+  # Examples
+  - jupyter
+  - nbconvert
+
+  # Dev / Testing
+  - versioneer
+
+  - pre-commit
+  - isort
+  - black
+  - flake8
+  - flake8-pyproject
+  - nbqa
+
+  - pytest
+  - pytest-cov
+
+  - codecov

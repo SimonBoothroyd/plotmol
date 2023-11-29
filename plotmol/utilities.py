@@ -1,3 +1,4 @@
+"""Utility functions"""
 import functools
 
 from rdkit import Chem

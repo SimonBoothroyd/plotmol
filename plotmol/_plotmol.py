@@ -1,22 +1,23 @@
 import base64
-from typing import Any, Callable, Dict, List, Optional, Union
+import typing
 
-from bokeh.models import ColumnDataSource, GlyphRenderer
-from bokeh.plotting import Figure
+import bokeh.models
+import bokeh.plotting
 
-from plotmol.styles import MoleculeStyle
-from plotmol.utilities.rdkit import smiles_to_svg
+import plotmol.styles
+import plotmol.utilities
 
-DataType = Union[float, int, str]
+DataType = float | int | str
 
-MoleculeToImageFunction = Callable[[str, MoleculeStyle], str]
+MoleculeToImageFunction = typing.Callable[[str, plotmol.styles.MoleculeStyle], str]
 
 
 class InputSizeError(ValueError):
-    """An error raised when inputs of different sizes are provided to a plot function."""
+    """An error raised when inputs of different sizes are provided to a plot
+    function."""
 
-    def __init__(self, sizes: Dict[str, int]):
-
+    def __init__(self, sizes: dict[str, int] | None = None):
+        sizes = {} if sizes is None else sizes
         sizes_str = ", ".join(f"{label} ({size})" for label, size in sizes.items())
 
         super(InputSizeError, self).__init__(
@@ -37,19 +38,19 @@ def default_tooltip_template() -> str:
 
 
 def scatter(
-    figure: Figure,
-    x: List[DataType],
-    y: List[DataType],
-    smiles: List[str],
-    legend_label: Optional[str] = None,
-    marker: Optional[str] = None,
-    marker_size: Optional[int] = None,
-    marker_color: Optional[str] = None,
-    molecule_style: Optional[MoleculeStyle] = None,
-    molecule_to_image_function: Optional[MoleculeToImageFunction] = None,
-    custom_column_data: Optional[Dict[str, List[DataType]]] = None,
-    **kwargs: Dict[str, Any],
-) -> GlyphRenderer:
+    figure: bokeh.plotting.figure,
+    x: list[DataType],
+    y: list[DataType],
+    smiles: list[str],
+    legend_label: str | None = None,
+    marker: str | None = None,
+    marker_size: int | None = None,
+    marker_color: str | None = None,
+    molecule_style: plotmol.styles.MoleculeStyle | None = None,
+    molecule_to_image_function: MoleculeToImageFunction | None = None,
+    custom_column_data: dict[str, list[DataType]] | None = None,
+    **kwargs: dict[str, typing.Any],
+) -> bokeh.models.GlyphRenderer:
     """Adds a scatter series to a bokeh figure which will show the molecular
     structure associated with a data point when the user hovers over it.
 
@@ -86,13 +87,14 @@ def scatter(
             function.
     """
 
-    # Set the default mutable inputs.
-    molecule_style = molecule_style if molecule_style is not None else MoleculeStyle()
+    molecule_style = (
+        molecule_style if molecule_style is not None else plotmol.styles.MoleculeStyle()
+    )
 
     molecule_to_image_function = (
         molecule_to_image_function
         if molecule_to_image_function is not None
-        else smiles_to_svg
+        else plotmol.utilities.smiles_to_svg
     )
 
     # Validate the sizes of the input arrays.
@@ -114,7 +116,6 @@ def scatter(
     column_data = {"x": x, "y": y, "smiles": smiles, "image": images}
 
     if custom_column_data is not None:
-
         invalid_sizes = {
             key: len(entry)
             for key, entry in custom_column_data.items()
@@ -126,7 +127,7 @@ def scatter(
 
         column_data.update(custom_column_data)
 
-    source = ColumnDataSource(data=column_data)
+    source = bokeh.models.ColumnDataSource(data=column_data)
 
     # Add the scatter data.
     scatter_kwargs = {**kwargs}
