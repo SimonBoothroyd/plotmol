@@ -4,8 +4,8 @@
 [![codecov](https://codecov.io/gh/SimonBoothroyd/plotmol/branch/main/graph/badge.svg?token=Aa8STE8WBZ)](https://codecov.io/gh/SimonBoothroyd/plotmol)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This framework provides a very simple set of functionalities for creating interactive plots that are annotated with 
-molecular structures using the [`bokeh` library](https://docs.bokeh.org/en/latest/index.html).
+This framework provides a set of functionalities for creating interactive plots that are annotated with molecular 
+structures using the [`bokeh` library](https://docs.bokeh.org/en/latest/index.html).
 
 ## Installation
 
