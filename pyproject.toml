@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel", "versioneer"]
+requires = ["setuptools>=61.0", "wheel", "versioneer", "rdkit", "bokeh"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -11,6 +11,7 @@ dynamic = ["version"]
 readme = "README.md"
 requires-python = ">=3.10"
 classifiers = ["Programming Language :: Python :: 3"]
+dependencies = ["rdkit", "bokeh"]
 
 [tool.setuptools]
 zip-safe = false
